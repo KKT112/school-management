@@ -1,0 +1,1 @@
+export {default as schoolRegistration} from "../assets/images/registration-image/schoolRegistartion.png"
