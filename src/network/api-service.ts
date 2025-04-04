@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import  axios, {isAxiosError } from "axios";
-import  apiEndPoints  from "./api-end-points";
+import { apiEndPoints } from "./api-end-points";
 
 
 const apiAxiosInstance = axios.create({ baseURL: apiEndPoints.baseUrl });
@@ -14,7 +14,6 @@ interface IServerResponse<T> {
 interface IMethodProps {
   params?:any;
   data?: any;
-  params?:any;
   url: string;
 }
 
