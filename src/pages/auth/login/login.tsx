@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import Navbar from "@/pages/authenticated/school-landong-page-home/navbar";
 import { loginTopImage } from "@/lib/login";
-// import { Checkbox } from "@/components/ui/checkbox";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useNavigate } from "react-router-dom";
 import { loginlogo } from "@/lib/logoes";
 import { FaFacebookF, FaTwitter, FaGoogle } from "react-icons/fa";
@@ -22,7 +22,7 @@ import { ImSpinner2 } from "react-icons/im";
 import { useState } from "react";
 import apiLogin from "@/network/api/api-login/api-login";
 
-//**Zod Schema for Form Validation**  
+//**Zod Schema for Form Validation**
 const LoginFormSchema = z.object({
   email: z
     .string({ message: "Email is required" })
@@ -30,50 +30,52 @@ const LoginFormSchema = z.object({
     .max(40, { message: "Maximum 20 characters allowed" }),
   password: z
     .string({ message: "Password is required" })
-    .min(2, { message: "Minimum 2 characters required" })
+    .min(2, { message: "Minimum 8 characters required" })
     .max(20, { message: "Maximum 20 characters allowed" }),
-  // checkbox: z.boolean({ required_error: "please check to confirm" }).optional(),
+  checkbox: z.boolean({ required_error: "please check to confirm" }).optional(),
 });
 
 type TLoginSchema = z.infer<typeof LoginFormSchema>;
 
 const Login = () => {
   const navigate = useNavigate();
-  const [isloading,setIsloading] = useState(false);
-
-
-
+  const [isloading, setIsloading] = useState(false);
 
   const form = useForm<TLoginSchema>({
     resolver: zodResolver(LoginFormSchema),
-    defaultValues: { email: "", password: "" },
+    defaultValues: { email: "", password: "" ,checkbox:true},
   });
 
   // Form Submission Handler
-  const Login: SubmitHandler<TLoginSchema> = async(data) => {
-   form.reset({email:"",password:""});
-   console.log("Login data",data);
-   loginUser(data.email,data.password);
+  const Login: SubmitHandler<TLoginSchema> = async (data) => {
+    loginUser(data.email, data.password);
+   
   };
+ 
 
-
-  const loginUser = async (email:string, password:string) => {
+  const loginUser = async (email: string, password: string) => {
     setIsloading(true);
     try {
-        const res = await apiLogin.getLogin({ email, password });
-        console.log("Response from login:", res);
+      const res = await apiLogin.getLogin({ email, password });
+      // console.log("Response from login:", res);
 
-        if (res && res.s) { 
-            localStorage.setItem("auth", JSON.stringify(res.r)); 
-            navigate("/school-dashboard", { replace: true }); 
-        } else {
-            alert( "please enter valid username and password");
-        }
+      if (res && res.s) {
+        // localStorage.setItem("auth", JSON.stringify(res.r));
+        navigate("/school-dashboard", { replace: true });
+        form.reset({ email: "", password: "" });
+      } else if (res.m === "User not exists") {
+        navigate("/register", { replace: true });
+      } else {
+        alert(res.m);
+      }
     } catch {
-        alert("error");
+      alert("error");
+    } finally {
+      setIsloading(false);
+     
     }
-    setIsloading(false);
-};
+ 
+  };
 
   return (
     <div className="bg-orange-50 ">
@@ -145,7 +147,7 @@ const Login = () => {
                 {/* checkbox  */}
 
                 <div className="flex sm:flex-row gap-2 justify-between pt-5 items-center">
-                  {/* <div>
+                  <div>
                     <FormField
                       control={form.control}
                       name="checkbox"
@@ -166,22 +168,25 @@ const Login = () => {
                         </FormItem>
                       )}
                     />
-                  </div> */}
+                  </div>
                   <div>
-                    <button className="text-red-500 hover:text-red-600  text-sm  cursor-pointer">Forget Password? </button>
+                    <button className="text-red-500 hover:text-red-600  text-sm  cursor-pointer">
+                      Forget Password?{" "}
+                    </button>
                   </div>
                 </div>
 
                 {/* Submit Button */}
                 <div className="flex items-center pt-5 px-20">
                   <Button
-
                     type="submit"
                     className="border-1 w-full h-10 bg-blue-500 hover:bg-blue-600 cursor-pointer text-white text-lg "
                   >
-                   { isloading?
-                    <ImSpinner2 className="animate-spin duration-200"/> : "Login"
-                    }
+                    {isloading ? (
+                      <ImSpinner2 className="animate-spin duration-200" />
+                    ) : (
+                      "Login"
+                    )}
                   </Button>
                 </div>
               </form>
@@ -202,18 +207,24 @@ const Login = () => {
               <p className="text-lg">OR</p>
 
               <div className="flex justify-center gap-7 py-3">
-                <button><FaFacebookF
-                  size={30}
-                  className="bg-blue-600 cursor-pointer border-1 p-1 rounded-full text-white "
-                /></button>
-                <button><FaTwitter
-                  size={30}
-                  className="text-black-200 cursor-pointer border-1 p-1 rounded-full"
-                /></button>
-                <button><FaGoogle
-                  size={30}
-                  className="text-red-500 cursor-pointer border-1 p-1 rounded-full "
-                /></button>
+                <button>
+                  <FaFacebookF
+                    size={30}
+                    className="bg-blue-600 cursor-pointer border-1 p-1 rounded-full text-white "
+                  />
+                </button>
+                <button>
+                  <FaTwitter
+                    size={30}
+                    className="text-black-200 cursor-pointer border-1 p-1 rounded-full"
+                  />
+                </button>
+                <button>
+                  <FaGoogle
+                    size={30}
+                    className="text-red-500 cursor-pointer border-1 p-1 rounded-full "
+                  />
+                </button>
               </div>
             </div>
           </div>

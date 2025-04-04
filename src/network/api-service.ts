@@ -29,12 +29,12 @@ export const API_POST = async <T>({
 
     const {data:serverResponse} = await apiAxiosInstance.post(url,data);
 
-    return {s:1,m:"Success",r:serverResponse};
+    return serverResponse
 
   } catch (e) {
 
     if(isAxiosError(e)){
-      return { m: e.response?.data?.message ?? errorString, s: 0, r: null };
+      return { m: e.response?.data?.m ?? errorString, s: 0, r: null };
     }
  
     return {s:0,r:null,m:errorString};
