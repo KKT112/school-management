@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, redirect } from "react-router-dom";
 import SchoolLandingPages from "@/pages/authenticated/school-landing-pages";
 import Login from "@/pages/auth/login/login";
 import Register from "@/pages/auth/registration/registration";
@@ -21,7 +21,14 @@ export const route = createBrowserRouter([
     path: "/register",
     element: <Register />,
   },
-  {
+  { loader :()=>{
+    console.log("loader is calling");
+    const user = localStorage.getItem("auth");
+    if(!user){
+      return redirect("/");
+    }
+    return true;
+  },
     element: <OutLetWraper />,
     children: [
       {

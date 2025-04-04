@@ -62,10 +62,17 @@ const Login = () => {
 
         if (res && res.s) { 
             localStorage.setItem("auth", JSON.stringify(res.r)); 
-            form.reset({email:"",password:""});
+          
             navigate("/dashboard", { replace: true }); 
-        } else {
-            alert( res.m ?? "please enter valid username and password");
+        } else if(res.m === "User not exists"){
+          alert( res.m);
+          form.reset({email:"",password:""});
+          return navigate("/register");
+            
+        }
+        else{
+          alert(res.m);
+        
         }
     } catch {
       alert("error");
