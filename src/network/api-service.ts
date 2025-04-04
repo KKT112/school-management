@@ -14,34 +14,11 @@ interface IServerResponse<T> {
 interface IMethodProps {
 
   data?: any;
+  params?:any;
   url: string;
 }
 
-const errorString: string = "Oops something went wrong.";
-
-
-
-export const API_GET = async <T>({
-  url,
-  data,
-}: IMethodProps): Promise<IServerResponse<T>> => {
-  try {
-
-    const {data:serverResponse} = await apiAxiosInstance.get(url,{
-        data,
-    });
-
-    return {s:1,m:"Success",r:serverResponse};
-
-  } catch (e) {
-
-    if(isAxiosError(e)){
-      return { m: e.response?.data?.message ?? errorString, s: 0, r: null };
-    }
- 
-    return {s:0,r:null,m:"erroe form other"};
-  }
-};
+const errorString: string = "User not Exists.";
 
 export const API_POST = async <T>({
   url,
@@ -53,7 +30,7 @@ export const API_POST = async <T>({
     
     });
 
-    return {s:1,m:"sucessfull",r:serverResponse};
+    return {s:1,m:"Success",r:serverResponse};
 
   } catch (e) {
 
