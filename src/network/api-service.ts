@@ -29,11 +29,7 @@ export const API_POST = async <T>({
 
     const {data:serverResponse} = await apiAxiosInstance.post(url,data);
 
-<<<<<<< HEAD
     return serverResponse;
-=======
-    return serverResponse
->>>>>>> main
 
   } catch (e) {
 

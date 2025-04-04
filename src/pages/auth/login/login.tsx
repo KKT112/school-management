@@ -47,23 +47,16 @@ const Login = () => {
   });
 
   // Form Submission Handler
-<<<<<<< HEAD
   const Login: SubmitHandler<TLoginSchema> = async(data) => {
    
   //  console.log("Login data",data);
    loginUser(data.email,data.password);
-=======
-  const Login: SubmitHandler<TLoginSchema> = async (data) => {
-    loginUser(data.email, data.password);
-   
->>>>>>> main
   };
  
 
   const loginUser = async (email: string, password: string) => {
     setIsloading(true);
     try {
-<<<<<<< HEAD
         const res = await apiLogin.getLogin({ email, password });
         // console.log("Response from login:", res);
 
@@ -74,20 +67,6 @@ const Login = () => {
         } else {
             alert( res.m ?? "please enter valid username and password");
         }
-=======
-      const res = await apiLogin.getLogin({ email, password });
-      // console.log("Response from login:", res);
-
-      if (res && res.s) {
-        // localStorage.setItem("auth", JSON.stringify(res.r));
-        navigate("/school-dashboard", { replace: true });
-        form.reset({ email: "", password: "" });
-      } else if (res.m === "User not exists") {
-        navigate("/register", { replace: true });
-      } else {
-        alert(res.m);
-      }
->>>>>>> main
     } catch {
       alert("error");
     } finally {
