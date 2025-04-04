@@ -15,15 +15,11 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import Navbar from "@/pages/authenticated/school-landong-page-home/navbar";
 import { schoolRegistration } from "@/lib/registration";
-import ApiRegister from "@/network/api/school-registration/api-register";
-import { useNavigate } from "react-router-dom";
-
-// import { useNavigate } from "react-router-dom";
 
 const RegistrationFormSchema = z.object({
 
 
-  username: z
+  user_name: z
     .string({ message: "User name is required" })
     .min(2, { message: "Minimum two characters required" })
     .max(20, { message: "Maximum 20 characters allowed" }),
@@ -35,14 +31,14 @@ const RegistrationFormSchema = z.object({
 
   password: z
     .string({ message: "Password must be required" })
-    .min(8, { message: "Minimum 8 characters required" })
+    .min(2, { message: "Minimum 8 characters required" })
     .max(20, { message: "Maximum 20 characters allowed" }),
 
   confirmPassword: z
     .string({ message: "Password is further check " })
-    .min(8, { message: "Minimum 8 characters required" })
+    .min(2, { message: "Minimum 8 characters required" })
     .max(20, { message: "Maximum 20 characters allowed" }),
-  schoolname: z
+  name: z
     .string({ message: "School name is required" })
     .min(2, { message: "Minimum 2 characters required" })
     .max(30, { message: "Maximum 30 characters allowed" }),
@@ -65,38 +61,17 @@ const RegistrationFormSchema = z.object({
 type tSigninSchema = z.infer<typeof RegistrationFormSchema>;
 
 const Registration = () => {
-const navigate = useNavigate();
 
   const form = useForm<tSigninSchema>({
     resolver: zodResolver(RegistrationFormSchema),
     defaultValues: { },
   });
 
- //register school
-  const registerSchool = async()=>{
-
-    const formData = form.getValues();
-    try {
-      const res = await ApiRegister.postRegistration({email : formData.email, password:formData.password , address:formData.address , name:formData.schoolname , user_name:formData.username})
-
-      if(res?.s){
-        console.log("Register Successfull")
-        navigate("/login")
-      }else{
-        console.log("Failed to register")
-      }
-    } catch (error) {
-      return error
-    }
-  }
-
   // Form Submission Handler
   const Register: SubmitHandler<tSigninSchema> = async() => {
-    registerSchool();
-    form.reset({ schoolname:"",address:"",username: "", password: "",confirmPassword:"", email:"" });
+    form.reset({ name:"",address:"",user_name: "", password: "",confirmPassword:"", email:"" });
+  
   };
-
- 
 
   
 
@@ -115,7 +90,7 @@ const navigate = useNavigate();
           {/* UserName Field */}
           <FormField
             control={form.control}
-            name="username"
+            name="user_name"
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="pt-5 md:text-md">User Name*</FormLabel>
@@ -196,7 +171,7 @@ const navigate = useNavigate();
             {/* SchoolName Field */}
             <FormField
             control={form.control}
-            name="schoolname"
+            name="name"
             render={({ field }) => (
               <FormItem>
                 <FormLabel className="md:text-md pt-5 "> School Name* </FormLabel>
@@ -254,5 +229,3 @@ const navigate = useNavigate();
 };
 
 export default Registration;
-
-

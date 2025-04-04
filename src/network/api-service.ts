@@ -14,6 +14,7 @@ interface IServerResponse<T> {
 interface IMethodProps {
   params?:any;
   data?: any;
+  params?:any;
   url: string;
 }
 

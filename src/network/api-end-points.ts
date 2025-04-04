@@ -19,11 +19,12 @@ class ApiEndPoints{
     //End points 
 
 
-    //for registration 
-    public registration = "/register-school";
+    //api logindata
+    public getLogin = "/login";
+
+    //api registration 
+    public getRegistration = "/register-school";
 
 }
 
-const apiEndPoints = new ApiEndPoints(new ApiSchoolServer());
-
-export default apiEndPoints;
+ export const apiEndPoints = new ApiEndPoints(new ApiSchoolServer());
