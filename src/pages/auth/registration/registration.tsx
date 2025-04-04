@@ -15,6 +15,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import Navbar from "@/pages/authenticated/school-landong-page-home/navbar";
 import { schoolRegistration } from "@/lib/registration";
+import ApiRegister from "@/network/api/school-registration/api-register";
+import { useNavigate } from "react-router-dom";
+
 // import { useNavigate } from "react-router-dom";
 
 const RegistrationFormSchema = z.object({
@@ -62,17 +65,40 @@ const RegistrationFormSchema = z.object({
 type tSigninSchema = z.infer<typeof RegistrationFormSchema>;
 
 const Registration = () => {
-// const navigate = useNavigate();
+const navigate = useNavigate();
 
   const form = useForm<tSigninSchema>({
     resolver: zodResolver(RegistrationFormSchema),
     defaultValues: { },
   });
 
+ //register school
+  const registerSchool = async()=>{
+
+    const formData = form.getValues();
+    try {
+      const res = await ApiRegister.postRegistration({email : formData.email, password:formData.password , address:formData.address , name:formData.schoolname , user_name:formData.username})
+
+      if(res?.s){
+        console.log("Register Successfull")
+        navigate("/login")
+      }else{
+        console.log("Failed to register")
+      }
+    } catch (error) {
+      return error
+    }
+  }
+
   // Form Submission Handler
-  const Register: SubmitHandler<tSigninSchema> = () => {
+  const Register: SubmitHandler<tSigninSchema> = async() => {
+    registerSchool();
     form.reset({ schoolname:"",address:"",username: "", password: "",confirmPassword:"", email:"" });
   };
+
+ 
+
+  
 
   return (
     <div className="">

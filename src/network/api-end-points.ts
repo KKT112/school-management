@@ -1,6 +1,6 @@
 
 class ApiSchoolServer{
-    public schoolManagementApi = "https://api-school-management.devkrest.com/api/auth"
+    public baseUrl = "https://api-school-management.devkrest.com/api/auth"
 }
 
 class ApiEndPoints{
@@ -9,23 +9,21 @@ class ApiEndPoints{
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     constructor(server:any) {
-        this.baseUrl = server.baseUrl;
+        if(server instanceof ApiSchoolServer){
+            this.baseUrl = server.baseUrl;
+        }else{
+            this.baseUrl = "Oops something went wrong";
+        }
     }
 
-    //allend points 
+    //End points 
 
-
-    //for logindata
-    public login = "/login";
 
     //for registration 
     public registration = "/register-school";
 
-    //api for getallschoollist
-
-    public getAllSchoolname = "";
-
-
 }
 
- export const apiEndPoints = new ApiEndPoints(new ApiSchoolServer);
+const apiEndPoints = new ApiEndPoints(new ApiSchoolServer());
+
+export default apiEndPoints;
