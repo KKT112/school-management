@@ -19,4 +19,4 @@ export default class ApiRegister {
 
         return res;
     }
-}
+};

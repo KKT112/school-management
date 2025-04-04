@@ -15,6 +15,10 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import Navbar from "@/pages/authenticated/school-landong-page-home/navbar";
 import { schoolRegistration } from "@/lib/registration";
+import { useState } from "react";
+import ApiRegister from "@/network/api/school-registration/api-register";
+import { useNavigate } from "react-router-dom";
+import { ImSpinner2 } from "react-icons/im";
 
 const RegistrationFormSchema = z.object({
 
@@ -61,17 +65,45 @@ const RegistrationFormSchema = z.object({
 type tSigninSchema = z.infer<typeof RegistrationFormSchema>;
 
 const Registration = () => {
+  const [isloading,setIsloading] = useState(false);
+  const navigate = useNavigate();
 
   const form = useForm<tSigninSchema>({
     resolver: zodResolver(RegistrationFormSchema),
     defaultValues: { },
   });
 
+  //register api
+  const registrationUser = async () => {
+    setIsloading(true);
+    const formData = form.getValues()
+    try {
+        const res = await ApiRegister.postRegistration({user_name:formData.user_name,email:formData.email,password:formData.password,address:formData.address,name:formData.name });
+
+          //  console.log(res);
+      
+
+        if (res && res.s) { 
+           return navigate("/login", { replace: true }); 
+        } else {
+           return alert( "User already Exists");
+        }
+    } catch {
+       return alert("error");
+    }
+    setIsloading(false);
+};
+
+
   // Form Submission Handler
   const Register: SubmitHandler<tSigninSchema> = async() => {
+    
+    registrationUser();
     form.reset({ name:"",address:"",user_name: "", password: "",confirmPassword:"", email:"" });
   
   };
+  
+  
 
   return (
     <div className="">
@@ -214,7 +246,9 @@ const Registration = () => {
               type="submit"
               className="border-1 w-full h-10 bg-blue-600 hover:bg-blue-800 cursor-pointer text-white text-lg "
             >
-            Sign Up
+            { isloading?
+                               <ImSpinner2 className="animate-spin duration-200"/> : "Registration"
+                               }
             </Button>
           </div>
         </form>
