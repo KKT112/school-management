@@ -3,7 +3,7 @@
 const OutletTeacher = () => {
   return (
     <div>
-      teacher outelet
+      hello
     </div>
   )
 }
