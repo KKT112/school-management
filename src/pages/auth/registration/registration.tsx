@@ -73,8 +73,6 @@ const Registration = () => {
   
   };
 
-  
-
   return (
     <div className="">
       <Navbar/>

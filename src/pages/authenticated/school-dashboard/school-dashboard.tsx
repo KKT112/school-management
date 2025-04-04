@@ -1,8 +1,13 @@
+import MenuButton from "./mobileview-button/menu-button";
+import OutletComponent from "./outlet-componetn/outlet-component";
+import Sidebar from "./sidebar/sidebar";
 
 const SchoolDashboard = () => {
   return (
-    <div>
-      <p>hii ,heelo world </p>
+    <div className="flex flex-row ">
+      <Sidebar/>
+      <MenuButton/>
+      <OutletComponent/>
     </div>
   )
 }
