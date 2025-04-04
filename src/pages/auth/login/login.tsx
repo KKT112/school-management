@@ -63,7 +63,7 @@ const Login = () => {
         if (res && res.s) { 
             localStorage.setItem("auth", JSON.stringify(res.r)); 
             form.reset({email:"",password:""});
-            navigate("/school-dashboard", { replace: true }); 
+            navigate("/dashboard", { replace: true }); 
         } else {
             alert( res.m ?? "please enter valid username and password");
         }

@@ -1,9 +1,13 @@
+import { Button } from "@/components/ui/button";
 import { homeLogo } from "@/lib/logoes";
+import { LogoutAlert } from "@/pages/authenticated/dashboard/components/logout-alert/logout-alert";
+
 import { useNavigate } from "react-router-dom";
 
 const LogoListSidebar = () => {
 
   const  navigate = useNavigate();
+
 
   return (
     <div className="flex flex-col  pt-10 pb-10  h-full justify-between">
@@ -14,18 +18,16 @@ const LogoListSidebar = () => {
         </div>
 
         <div className="flex flex-col  items-center gap-5">
-          
-          <p className="cursor-pointer" onClick={()=>{navigate("/dashboard")}}>Dashboard</p>
-          <p className="cursor-pointer" onClick={()=>{navigate("/subject")}}>Subject</p>
-          <p className="cursor-pointer" onClick={()=>{navigate("/teacher")}}>Teacher</p>
-          <p className="cursor-pointer" onClick={()=>{navigate("/student")}}>Student</p>
+          <Button className="cursor-pointer" onClick={()=>{navigate("/subject")}}>Subject</Button>
+          <Button className="cursor-pointer" onClick={()=>{navigate("/teacher")}}>Teacher</Button>
+          <Button className="cursor-pointer" onClick={()=>{navigate("/student")}}>Student</Button>
         </div>
 
       </div>
-
       <div className="flex flex-col  items-center gap-5">
-        <p className="cursor-pointer">Setting</p>
-        <p className="cursor-pointer">Logout</p>
+        <Button className="cursor-pointer">Setting</Button>
+        <LogoutAlert/>
+
       </div>
     </div>
   );
