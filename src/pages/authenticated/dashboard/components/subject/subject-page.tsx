@@ -1,7 +1,27 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState } from "react";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
 import { DataTable } from "@/components/table/data-table";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
+
 import {
   Select,
   SelectContent,
@@ -10,16 +30,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
- 
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-
 interface ISubjectModel {
   name: string;
   teacherName: string;
@@ -27,62 +37,56 @@ interface ISubjectModel {
 }
 
 const subjects: ISubjectModel[] = [
-  {
-    name: "Physics",
-    teacherName: "john",
-    email: "john@gmail.com",
-  },
-  {
-    name: "English",
-    teacherName: "thomas",
-    email: "thomas@gmail.com",
-  },
-  {
-    name: "Maths",
-    teacherName: "Abc",
-    email: "Abc@gmail.com",
-  },
+  { name: "Physics", teacherName: "john", email: "john@gmail.com" },
+  { name: "English", teacherName: "thomas", email: "thomas@gmail.com" },
+  { name: "Maths", teacherName: "Abc", email: "Abc@gmail.com" },
 ];
 
+// Zod schema
+const subjectFormSchema = z.object({
+  name: z.string().min(1, "Subject name is required"),
+  teacherName: z.string().min(1, "Faculty name is required"),
+  email: z.string().email("Enter a valid email"),
+});
 
-
+type SubjectFormType = z.infer<typeof subjectFormSchema>;
 
 const OutletSubject = () => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [subjectArr, setSubjectArr] = useState<ISubjectModel[]>(subjects);
   const [openAddSubject, setOpenAddSubject] = useState(false);
   const [search, setSearch] = useState("");
-  const [subjectArr,setSubjectArr] = useState<ISubjectModel[]>(subjects);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const [newTeacherName, setNewTeacherName] = useState("");
-const [newEmail, setNewEmail] = useState("");
-const [newname, setNewname] = useState("");
+  const form = useForm<SubjectFormType>({
+    resolver: zodResolver(subjectFormSchema),
+    defaultValues: {
+      name: "",
+      teacherName: "",
+      email: "",
+    },
+  });
 
+  const onSubmit = (data: SubjectFormType) => {
+    const newSubject: ISubjectModel = {
+      name: data.name,
+      teacherName: data.teacherName,
+      email: data.email,
+    };
 
-const handleAddSubject = () => {
-  if (!newTeacherName || !newEmail || !newname) return;
-
-  const newSubjectAdd: ISubjectModel = {
-    name: newname,
-    email: newEmail,
-    teacherName:newTeacherName ,
+    setSubjectArr([...subjectArr, newSubject]);
+    form.reset();
+    setOpenAddSubject(false);
   };
 
-  setSubjectArr([...subjectArr, newSubjectAdd]);
-  setOpenAddSubject(false);
-
-  // Clear input fields
-  setNewname("");
-  setNewEmail("");
-  setNewTeacherName("");
-};
- // Delete user
- const handleDelete = (userToDelete: ISubjectModel) => {
-  const updatedSubjects = subjects.filter(subject =>subject.email !== userToDelete.email);
-  setSubjectArr(updatedSubjects);
-};
+  const handleDelete = (subjectToDelete: ISubjectModel) => {
+    const updatedSubjects = subjectArr.filter(
+      (subject) => subject.email !== subjectToDelete.email
+    );
+    setSubjectArr(updatedSubjects);
+  };
 
   return (
-    <div className="pt-20 ">
+    <div className="pt-20">
       <div className="flex mx-15 items-center gap-10">
         <p>Select Standard*</p>
         <Select>
@@ -99,25 +103,16 @@ const handleAddSubject = () => {
           </SelectContent>
         </Select>
       </div>
-  <div className="pt-20"></div>
-      <DataTable<ISubjectModel> 
-        // onFilterClick={() => {
-        //   setFilterSheetOpen(true);
-        // }}
+
+      <div className="pt-20" />
+
+      <DataTable<ISubjectModel>
         actionButton={
           <Button onClick={() => setOpenAddSubject(true)}>Add Subject</Button>
         }
         enableFilter={true}
         searchValue={[search]}
-        // callToNextPage={(currentPage, size) => {
-        //   if ((currentPage + 1) * size >= (totalData?.length ?? 0)) {
-        //     // setSkip(totalData?.length ?? 0);
-        //     fetchNextPage();
-        //   }
-        // }}
-        onSearchChange={(e: any) => {
-          setSearch(e.target.value);
-        }}
+        onSearchChange={(e: any) => setSearch(e.target.value)}
         isFetching={isLoading}
         isLoading={isLoading}
         data={subjectArr ?? []}
@@ -143,26 +138,23 @@ const handleAddSubject = () => {
           {
             accessorKey: "email",
             header: "Email",
-            cell: ({ row }) => {
-              return (
-                <div>
-                  <p className="text-start">{row.original.email}</p>
-                </div>
-              );
-            },
+            cell: ({ row }) => (
+              <div>
+                <p className="text-start">{row.original.email}</p>
+              </div>
+            ),
           },
           {
             id: "actions",
             header: "Actions",
             cell: ({ row }) => {
-              const user = row.original;
-
+              const subject = row.original;
               return (
                 <div className="flex gap-2">
                   <Button
                     variant="outline"
                     className="border-red-600 hover:bg-red-100 text-red-400"
-                    onClick={() => handleDelete(user)}
+                    onClick={() => handleDelete(subject)}
                   >
                     Delete
                   </Button>
@@ -173,26 +165,62 @@ const handleAddSubject = () => {
         ]}
       />
 
-<Dialog open={openAddSubject}>
-        <DialogContent
-        onInteractOutside={()=>setOpenAddSubject(false)}
-        >
+      {/* Dialog with form */}
+      <Dialog open={openAddSubject} onOpenChange={setOpenAddSubject}>
+        <DialogContent onInteractOutside={() => setOpenAddSubject(false)}>
           <DialogHeader>
             <DialogTitle>Add Subject</DialogTitle>
-
-            <div>
-             <p className="mt-7 pb-2">Subject Name </p> <Input placeholder="Enter Subject name" />
-             <p className=" pt-5 pb-2">Faculty Name</p> <Input type="text" placeholder="Enter Faculty Name"/>
-             <p className="pt-5 pb-2">Email</p> <Input type="email" placeholder="Enter email  "/>
-            </div>
-
-            <DialogFooter>
-              <Button>Submit</Button>
-              <Button
-              onClick={()=>setOpenAddSubject(false)}
-              type="button">Close</Button>
-            </DialogFooter>
           </DialogHeader>
+
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input placeholder="Enter Subject name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="teacherName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input placeholder="Enter Faculty Name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input type="email" placeholder="Enter email" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <DialogFooter className="pt-4">
+                <Button type="submit">Submit</Button>
+                <Button type="button" onClick={() => setOpenAddSubject(false)}>
+                  Close
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
         </DialogContent>
       </Dialog>
     </div>

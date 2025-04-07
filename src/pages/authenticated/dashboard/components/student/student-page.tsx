@@ -1,6 +1,10 @@
+import { useState } from "react";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
 import { DataTable } from "@/components/table/data-table";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -9,6 +13,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
 
 interface IUserModel {
   name: string;
@@ -17,56 +28,67 @@ interface IUserModel {
   email: string;
 }
 
-const OutletStudent = () => {
+//  Create Zod schema
+const studentFormSchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  email: z.string().email("Invalid email"),
+  age: z
+    .string()
+    .min(1, "Age is required")
+    .refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
+      message: "Age must be a valid number",
+    }),
+});
 
-  const users = [
+type StudentFormValues = z.infer<typeof studentFormSchema>;
+
+const OutletStudent = () => {
+  const initialUsers: IUserModel[] = [
     {
       name: "Nayan",
       address: "Surendarnagar",
       age: 21,
-      email: "n@gmail.com",
+      email: "nayan@gmail.com",
     },
     {
       name: "Kuldeep",
       address: "Junagadha",
       age: 21,
-      email: "k@gmail.com",
+      email: "kuldeep@gmail.com",
     },
   ];
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [user, setUsers] = useState<IUserModel[]>(initialUsers);
   const [studentDetail, setStudentDetail] = useState(false);
   const [search, setSearch] = useState("");
-  const [user, setUsers] = useState<IUserModel[]>(users);
+  const [isLoading, setIsLoading] = useState(false);
 
+  //  Use the form hook
+  const form = useForm<StudentFormValues>({
+    resolver: zodResolver(studentFormSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      age: "",
+    },
+  });
 
-
-  const [newName, setNewName] = useState("");
-  const [newEmail, setNewEmail] = useState("");
-  const [newAge, setNewAge] = useState("");
-
-  const handleAddUser = () => {
-    if (!newName || !newEmail || !newAge) return;
-
+  // Submit Handler
+  const onSubmit = (data: StudentFormValues) => {
     const newUser: IUserModel = {
-      name: newName,
-      email: newEmail,
-      age: parseInt(newAge),
+      name: data.name,
+      email: data.email,
+      age: parseInt(data.age),
       address: "",
     };
 
     setUsers([...user, newUser]);
+    form.reset();
     setStudentDetail(false);
-
-    // Clear input fields
-    setNewName("");
-    setNewEmail("");
-    setNewAge("");
   };
 
-  // Delete user
   const handleDelete = (userToDelete: IUserModel) => {
-    const updatedUsers = users.filter(user => user.email !== userToDelete.email);
+    const updatedUsers = user.filter((u) => u.email !== userToDelete.email);
     setUsers(updatedUsers);
   };
 
@@ -81,7 +103,7 @@ const OutletStudent = () => {
         onSearchChange={(e: any) => setSearch(e.target.value)}
         isFetching={isLoading}
         isLoading={isLoading}
-        data={users}
+        data={user}
         initialTableState={{
           columnPinning: { right: ["action"] },
         }}
@@ -93,14 +115,8 @@ const OutletStudent = () => {
               return row.index + 1;
             },
           },
-          {
-            accessorKey: "name",
-            header: "Name",
-          },
-          {
-            accessorKey: "email",
-            header: "Email",
-          },
+          { accessorKey: "name", header: "Name" },
+          { accessorKey: "email", header: "Email" },
           {
             accessorKey: "age",
             header: "Age",
@@ -127,39 +143,62 @@ const OutletStudent = () => {
         ]}
       />
 
+      {/* ✅ Dialog + Zod Form */}
       <Dialog open={studentDetail} onOpenChange={setStudentDetail}>
         <DialogContent onInteractOutside={() => setStudentDetail(false)}>
           <DialogHeader>
             <DialogTitle>Add Student Detail</DialogTitle>
-            <div>
-              <p className="mt-7 pb-2">Student Name</p>
-              <Input
-                placeholder="Enter Student name"
-                value={newName}
-                onChange={(e) => setNewName(e.target.value)}
-              />
-              <p className="pt-5 pb-2">Student Email</p>
-              <Input
-                type="email"
-                placeholder="Enter Student Email"
-                value={newEmail}
-                onChange={(e) => setNewEmail(e.target.value)}
-              />
-              <p className="pt-5 pb-2">Student Age</p>
-              <Input
-                type="number"
-                placeholder="Enter Student age"
-                value={newAge}
-                onChange={(e) => setNewAge(e.target.value)}
-              />
-            </div>
-            <DialogFooter>
-              <Button onClick={handleAddUser}>Submit</Button>
-              <Button onClick={() => setStudentDetail(false)} type="button">
-                Close
-              </Button>
-            </DialogFooter>
           </DialogHeader>
+
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input placeholder="Enter Student name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input type="email" placeholder="Enter Student email" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="age"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input type="number" placeholder="Enter Student age" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <DialogFooter className="pt-4">
+                <Button type="submit">Submit</Button>
+                <Button type="button" onClick={() => setStudentDetail(false)}>
+                  Close
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
         </DialogContent>
       </Dialog>
     </div>
