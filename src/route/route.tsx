@@ -23,7 +23,7 @@ export const route = createBrowserRouter([
   },
   { loader :()=>{
     console.log("loader is calling");
-    const user = localStorage.getItem(localStorage.storage_key);
+    const user = localStorage.getItem("auth");
     if(!user){
       return redirect("/");
     }
