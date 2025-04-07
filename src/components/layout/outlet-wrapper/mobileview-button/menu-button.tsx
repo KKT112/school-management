@@ -12,10 +12,10 @@ import LogoListSidebar from "../sidebar/logo list/logo-list";
 const MenuButton = () => {
   return (
     <div className="sm:hidden ">
-   
+ 
       <Sheet >
         <SheetTrigger className="">
-        <CgMenu className="cursor-pointer text-2xl" />
+        <CgMenu className="cursor-pointer text-3xl" />
         </SheetTrigger>
         <SheetContent side="left" className="w-[50%]">
           

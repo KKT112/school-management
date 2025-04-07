@@ -3,7 +3,7 @@
 const OutletSubject = () => {
   return (
     <div>
-      outlet subject 
+      Subject - list 
     </div>
   )
 }

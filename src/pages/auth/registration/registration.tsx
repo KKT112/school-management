@@ -74,11 +74,11 @@ const Registration = () => {
   });
 
   //register api
-  const registrationUser = async () => {
+    const registrationUser = async () => {
     setIsloading(true);
     const formData = form.getValues()
     try {
-        const res = await ApiRegister.postRegistration({user_name:formData.user_name,email:formData.email,password:formData.password,address:formData.address,name:formData.name });
+       const res = await ApiRegister.postRegistration({user_name:formData.user_name,email:formData.email,password:formData.password,address:formData.address,name:formData.name });
 
           //  console.log(res);
       
@@ -91,7 +91,10 @@ const Registration = () => {
     } catch {
        return alert("error");
     }
-    setIsloading(false);
+    finally{
+      setIsloading(false);
+    }
+  
 };
 
 

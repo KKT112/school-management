@@ -1,15 +1,17 @@
 import { Outlet } from "react-router-dom";
-import MenuButton from "./mobileview-button/menu-button";
 import Sidebar from "./sidebar/sidebar";
+import Header from "@/components/header/header";
 
 const OutLetWraper = () => {
   return (
-    <div className="flex flex-row ">
+    <div>
+    <Header/>
+    <div className="flex flex-col md:flex-row pt-5 md:pt-0 ">
       <Sidebar />
-      <MenuButton />
-      <div className="bg-amber-500 flex-1">
+      <div className=" text-center  md:flex-1 mt-20">
         <Outlet />
       </div>
+    </div>
     </div>
   );
 };
