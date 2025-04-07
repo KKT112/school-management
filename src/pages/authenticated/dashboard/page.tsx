@@ -2,7 +2,7 @@
 
 function DashboardPage() {
   return (
-    <div>
+    <div className="">
       <p>Dashoard</p>
     </div>
   )

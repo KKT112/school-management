@@ -24,7 +24,7 @@ import { useNavigate } from "react-router-dom"
     return (
       <AlertDialog >
         <AlertDialogTrigger asChild>
-          <Button className="">Logout</Button>
+          <Button className="cursor-pointer hover:scale-125 hover:text-red-500 text-white ">Logout</Button>
         </AlertDialogTrigger>
         <AlertDialogContent>
           <AlertDialogHeader>

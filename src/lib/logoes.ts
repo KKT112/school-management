@@ -16,3 +16,7 @@ export {default as loginlogo} from "../assets/images/logoes/login-logo/school-lo
 //navbar logo
 
 // export {default as navbarLogo} from "../assets/images/logoes/animated navbar.gif" 
+
+//school-icon-logo
+
+export {default as schoolIcon} from "../assets/images/logoes/school-profile-logo/school-icon.png"
