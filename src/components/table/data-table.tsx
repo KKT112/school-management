@@ -105,7 +105,7 @@ export function DataTable<TData>({
   }, [...searchValue]);
 
   return (
-    <div className="space-y-4 px-20">
+    <div className=" space-y-7 px-5 md:px-10 xl:px-15">
       <DataTableToolbar
         actionButton={actionButton}
         table={table}

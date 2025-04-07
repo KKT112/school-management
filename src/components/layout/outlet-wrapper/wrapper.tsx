@@ -6,9 +6,9 @@ const OutLetWraper = () => {
   return (
     <div>
     <Header/>
-    <div className="flex flex-col md:flex-row pt-5 md:pt-0 ">
+    <div className="flex flex-col sm:flex-row">
       <Sidebar />
-      <div className=" text-center  md:flex-1 mt-20">
+      <div className=" text-center  md:flex-1  ">
         <Outlet />
       </div>
     </div>

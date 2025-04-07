@@ -10,16 +10,22 @@ import {
     AlertDialogTrigger,
   } from "@/components/ui/alert-dialog"
   import { Button } from "@/components/ui/button"
+import { setSchoolName } from "@/redux/reducer/reducer";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom"
   
   export function LogoutAlert() {
 
     const navigate = useNavigate();
+    const dispatch = useDispatch();
 
     const handleLogout =()=>{
         localStorage.removeItem("auth");
         console.log("logout successfully")
         navigate("/");
+
+        localStorage.removeItem("schoolName");
+        dispatch(setSchoolName(""));
     }
     return (
       <AlertDialog >
@@ -42,4 +48,4 @@ import { useNavigate } from "react-router-dom"
       </AlertDialog>
     )
   }
-  
+

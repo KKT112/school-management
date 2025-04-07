@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
