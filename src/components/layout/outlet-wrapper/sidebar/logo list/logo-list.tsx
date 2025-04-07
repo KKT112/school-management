@@ -1,20 +1,28 @@
-import { homeLogo } from "@/lib/logoes";
+import { schoolIcon } from "@/lib/logoes";
 import { useNavigate } from "react-router-dom";
 import { PiStudent } from "react-icons/pi";
 import { LuNotebookText } from "react-icons/lu";
 import { GiTeacher } from "react-icons/gi";
 import { MdSettingsApplications } from "react-icons/md";
 import { LogoutAlert } from "@/pages/authenticated/dashboard/components/logout-alert/logout-alert";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../../../redux/store";
 import { FiBookOpen } from "react-icons/fi";
+
+
 
 const LogoListSidebar = () => {
   const navigate = useNavigate();
+  const schoolName = useSelector((state: RootState) => state.school.name);
 
   return (
-    <div className="flex flex-col  pt-10 pb-10  h-full justify-between md:bg-gray-200">
+    <div className="flex flex-col  pt-10 pb-10  h-full justify-between ">
       <div className="flex flex-col gap-5 ">
         <div className=" md:hidden flex justify-center pt-2 pb-2">
-          <img src={homeLogo} alt="" className="md:h-12 sm:h-8 h-8" />
+        <div className="flex flex-col gap-3 items-center ">
+              <img src={schoolIcon} className="h-6" />
+              <p className="text-sm font-semibold">{schoolName}</p>
+            </div>
         </div>
 
         <div className="flex flex-col  items-center gap-5 ">

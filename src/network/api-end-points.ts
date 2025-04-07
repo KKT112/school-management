@@ -25,6 +25,14 @@ class ApiEndPoints{
     //api registration 
     public getRegistration = "/register-school";
 
+    //api teacher
+    
+  
+    //api subject
+
+
+    //
+
 }
 
  export const apiEndPoints = new ApiEndPoints(new ApiSchoolServer());

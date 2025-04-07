@@ -21,6 +21,8 @@ import { FaFacebookF, FaTwitter, FaGoogle } from "react-icons/fa";
 import { ImSpinner2 } from "react-icons/im";
 import { useState } from "react";
 import apiLogin from "@/network/api/api-login/api-login";
+import { useDispatch } from "react-redux";
+import { setSchoolName } from "@/redux/reducer/reducer";
 
 //**Zod Schema for Form Validation**
 const LoginFormSchema = z.object({
@@ -62,8 +64,10 @@ const Login = () => {
 
         if (res && res.s) { 
             localStorage.setItem("auth", JSON.stringify(res.r)); 
-          
+            localStorage.setItem("schoolName", JSON.stringify(res.r?.name || ""));
+            dispatch(setSchoolName(res.r?.name || ""));
             navigate("/dashboard", { replace: true }); 
+            
         } else if(res.m === "User not exists"){
           alert( res.m);
           form.reset({email:"",password:""});
@@ -80,8 +84,11 @@ const Login = () => {
       setIsloading(false);
      
     }
+
+   
  
   };
+  const dispatch = useDispatch();
 
   return (
     <div className="bg-orange-50 ">

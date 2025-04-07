@@ -1,20 +1,25 @@
-import { homeLogo, schoolIcon } from "@/lib/logoes"
-import MenuButton from "../layout/outlet-wrapper/mobileview-button/menu-button"
-
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
+import MenuButton from "../layout/outlet-wrapper/mobileview-button/menu-button";
+import { homeLogo, schoolIcon } from "@/lib/logoes";
 
 const Header = () => {
-  return (
-    <div className="bg-white shadow-md py-3 items-center justify-between px-10 flex ">
-        <MenuButton />
-       <div className="">
-          <img src={homeLogo} alt="" className="md:h-10 sm:h-8 h-8" />
-        </div>
-        <div><img src={schoolIcon} className="h-10"/>
-        <div></div>
-        </div>
-       
-    </div>
-  )
-}
+  const schoolName = useSelector((state: RootState) => state.school.name);
 
-export default Header
+  return (
+    <div className="bg-white shadow-md py-3 items-center justify-between px-10 flex">
+      <MenuButton />
+      <img src={homeLogo} alt="" className=" md:h-10 sm:h-8 h-8" />
+
+      <div className="hidden md:visible md:flex gap-3 items-center">
+    
+       
+        <img src={schoolIcon} className="h-10" />
+        <p className="text-lg font-semibold">{schoolName}</p>
+      </div>
+    </div>
+  );
+};
+
+export default Header;
+

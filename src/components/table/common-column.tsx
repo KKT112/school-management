@@ -1,4 +1,5 @@
 "use client";
+import { JSX } from "react";
 import { DataTableColumnHeader } from "./common-column-header";
 import { CellContext, ColumnDef, HeaderContext } from "@tanstack/react-table";
 
@@ -11,6 +12,7 @@ export interface CommonColumnProps<T> {
 }
 export default function CommonColumn<T>(
   p: CommonColumnProps<T>[]
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 ): ColumnDef<T, any>[] {
   const headers: ColumnDef<T>[] = [];
 

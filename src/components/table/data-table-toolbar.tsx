@@ -10,6 +10,7 @@ import { ChangeEventHandler } from "react";
 
 
 interface DataTableToolbarProps {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   table: Table<any>;
   search?: string;
   onSearchChange?: ChangeEventHandler<HTMLInputElement> | undefined;
