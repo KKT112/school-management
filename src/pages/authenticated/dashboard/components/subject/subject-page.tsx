@@ -20,6 +20,7 @@ import {
   FormItem,
   FormControl,
   FormMessage,
+  FormLabel,
 } from "@/components/ui/form";
 
 import {
@@ -30,26 +31,26 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-interface ISubjectModel {
-  name: string;
-  teacherName: string;
-  email: string;
-}
-
-const subjects: ISubjectModel[] = [
-  { name: "Physics", teacherName: "john", email: "john@gmail.com" },
-  { name: "English", teacherName: "thomas", email: "thomas@gmail.com" },
-  { name: "Maths", teacherName: "Abc", email: "Abc@gmail.com" },
-];
-
 // Zod schema
 const subjectFormSchema = z.object({
   name: z.string().min(1, "Subject name is required"),
-  teacherName: z.string().min(1, "Faculty name is required"),
-  email: z.string().email("Enter a valid email"),
+  teacherName: z.enum(["john", "thomas", "venom", "abc"], {
+    message: "Please select a teacher name",
+  }),
 });
 
 type SubjectFormType = z.infer<typeof subjectFormSchema>;
+
+interface ISubjectModel {
+  name: string;
+  teacherName: string;
+}
+
+const subjects: ISubjectModel[] = [
+  { name: "Physics", teacherName: "john" },
+  { name: "English", teacherName: "thomas" },
+  { name: "Maths", teacherName: "Venom" },
+];
 
 const OutletSubject = () => {
   const [subjectArr, setSubjectArr] = useState<ISubjectModel[]>(subjects);
@@ -61,8 +62,7 @@ const OutletSubject = () => {
     resolver: zodResolver(subjectFormSchema),
     defaultValues: {
       name: "",
-      teacherName: "",
-      email: "",
+      teacherName: undefined,
     },
   });
 
@@ -70,7 +70,6 @@ const OutletSubject = () => {
     const newSubject: ISubjectModel = {
       name: data.name,
       teacherName: data.teacherName,
-      email: data.email,
     };
 
     setSubjectArr([...subjectArr, newSubject]);
@@ -80,35 +79,33 @@ const OutletSubject = () => {
 
   const handleDelete = (subjectToDelete: ISubjectModel) => {
     const updatedSubjects = subjectArr.filter(
-      (subject) => subject.email !== subjectToDelete.email
+      (subject) => subject !== subjectToDelete
     );
     setSubjectArr(updatedSubjects);
   };
 
   return (
     <div className="pt-20">
-      <div className="flex mx-15 items-center gap-10">
-        <p>Select Standard*</p>
-        <Select>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Std-1" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="std-1">Std-1</SelectItem>
-            <SelectItem value="std-2">Std-2</SelectItem>
-            <SelectItem value="std-3">Std-3</SelectItem>
-            <SelectItem value="std-4">Std-4</SelectItem>
-            <SelectItem value="std-5">Std-5</SelectItem>
-            <SelectItem value="std-6">Std-6</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
       <div className="pt-20" />
 
       <DataTable<ISubjectModel>
         actionButton={
-          <Button onClick={() => setOpenAddSubject(true)}>Add Subject</Button>
+          <div className="flex items-center gap-5">
+            {" "}
+            <Button onClick={() => setOpenAddSubject(true)}>Add Subject</Button>
+            <Select>
+              <SelectTrigger className="py-6 px-7 text-lg">
+                <SelectValue placeholder="Select a teacher" />
+              </SelectTrigger>
+
+              <SelectContent className="bg-gray-200">
+                <SelectItem value="john">John</SelectItem>
+                <SelectItem value="thomas">Thomas</SelectItem>
+                <SelectItem value="venom">Venom</SelectItem>
+                <SelectItem value="abc">abc</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         }
         enableFilter={true}
         searchValue={[search]}
@@ -134,15 +131,6 @@ const OutletSubject = () => {
           {
             accessorKey: "teacherName",
             header: "Faculty Name",
-          },
-          {
-            accessorKey: "email",
-            header: "Email",
-            cell: ({ row }) => (
-              <div>
-                <p className="text-start">{row.original.email}</p>
-              </div>
-            ),
           },
           {
             id: "actions",
@@ -192,27 +180,27 @@ const OutletSubject = () => {
                 name="teacherName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormControl>
-                      <Input placeholder="Enter Faculty Name" {...field} />
-                    </FormControl>
+                    <FormLabel className=" ">Teacher Name :</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="py-6 px-7 text-lg">
+                          <SelectValue placeholder="Select a teacher" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="bg-gray-200">
+                        <SelectItem value="john">John</SelectItem>
+                        <SelectItem value="thomas">Thomas</SelectItem>
+                        <SelectItem value="venom">Venom</SelectItem>
+                        <SelectItem value="abc">abc</SelectItem>
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input type="email" placeholder="Enter email" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
               <DialogFooter className="pt-4">
                 <Button type="submit">Submit</Button>
                 <Button type="button" onClick={() => setOpenAddSubject(false)}>

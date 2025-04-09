@@ -22,7 +22,7 @@ import { ImSpinner2 } from "react-icons/im";
 import { useState } from "react";
 import apiLogin from "@/network/api/api-login/api-login";
 import { useDispatch } from "react-redux";
-import { setSchoolName } from "@/redux/reducer/reducer";
+import { setSchoolName } from "@/redux/reducer/school-reducer";
 
 //**Zod Schema for Form Validation**
 const LoginFormSchema = z.object({

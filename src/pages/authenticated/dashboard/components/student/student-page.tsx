@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
@@ -143,7 +144,7 @@ const OutletStudent = () => {
         ]}
       />
 
-      {/* ✅ Dialog + Zod Form */}
+      {/*  Dialog + Zod Form */}
       <Dialog open={studentDetail} onOpenChange={setStudentDetail}>
         <DialogContent onInteractOutside={() => setStudentDetail(false)}>
           <DialogHeader>

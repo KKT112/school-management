@@ -58,7 +58,7 @@ const StandardPageOutlet = () => {
   
 
   return (
-    <div>
+    <div className="pt-20">
       <DataTable<IStandardData>
         // onFilterClick={() => {
         //   setFilterSheetOpen(true);

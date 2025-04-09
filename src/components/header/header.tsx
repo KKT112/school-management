@@ -1,10 +1,10 @@
 import { useSelector } from "react-redux";
-import { RootState } from "../../redux/store";
+import { ReduxState } from "../../redux/store";
 import MenuButton from "../layout/outlet-wrapper/mobileview-button/menu-button";
 import { homeLogo, schoolIcon } from "@/lib/logoes";
 
 const Header = () => {
-  const schoolName = useSelector((state: RootState) => state.school.name);
+  const schoolName = useSelector((state: ReduxState) => state.school.name);
 
   return (
     <div className="bg-white shadow-md py-3 items-center justify-between px-10 flex">
