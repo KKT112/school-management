@@ -18,63 +18,81 @@ import {
   Form,
   FormControl,
   FormField,
-  FormItem,
+  FormItem, 
   FormMessage,
 } from "@/components/ui/form";
 import { ITeacherModel } from "@/model/school-register/teacher-model";
 import TeacherContextProvider, { useContextProvider } from "./cntx";
-
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import ApiTeacherCreate, { ITeacherAdd } from "@/network/api/api-techer/api-create-teacher";
 
 //  Create Zod schema
 const teacherFormSchema = z.object({
-  school_id:z.number(),
+  
   teacher_name: z.string().min(1, { message: "Name is required" }),
   email: z.string().email({ message: "email is required" }),
-  status_label: z.string().min(2, { message: "label is required" }),
-  password:z.string(),
-
-
+  password:z.string().min(3,{message:"Enter Your Password"}),
+  status_label: z.enum(["Active","UnActive"], {
+    message: "Please select a Status name",
+  }),
 });
 
 type StudentFormValues = z.infer<typeof teacherFormSchema>;
 
-function OutletTeacher(){
-  return(
+function OutletTeacher() {
+  return (
     <TeacherContextProvider>
-    <TeacherPage/>
-  </TeacherContextProvider>
-  )
- 
+      <TeacherPage />
+    </TeacherContextProvider>
+  );
 }
-
 
 
 const TeacherPage = () => {
   const [tecaherDetail, setTeacherDetail] = useState(false);
   const [search, setSearch] = useState("");
-  const { isLoading, teacher} = useContextProvider();
+  const { isLoading, teacher,school_id,fetchTeachers,  } = useContextProvider();
+
   
+  
+const techerAdd = async (data: ITeacherAdd) => {
+  const res = await ApiTeacherCreate.ApiCreateTeacher(data);
+  console.log("api response",res.m);
 
+  if(res.m === "Success"){
+    await fetchTeachers(); 
+    console.log(fetchTeachers());
+    setTeacherDetail(false); 
+    form.reset(); 
+  }
+};
 
-  //  
+  //
   const form = useForm<StudentFormValues>({
     resolver: zodResolver(teacherFormSchema),
     defaultValues: {
       teacher_name: "",
       email: "",
-      status_label: "",
     },
   });
 
-
   // Submit Handler
   const onSubmit = (data: StudentFormValues) => {
-    console.log("Form submitted with data: ", data); 
-     setTeacherDetail(false); 
-     form.reset(); 
+    console.log("Form submitted with data: ", data);
+    techerAdd({...data,school_id });
+   
   };
-  
-  
+
+  // function handleDelete(teacher_name){
+
+  // }
+
   return (
     <div className="pt-20">
       <DataTable<ITeacherModel>
@@ -104,7 +122,7 @@ const TeacherPage = () => {
               return row.index + 1;
             },
           },
-         
+
           { accessorKey: "name", header: "Name" },
           { accessorKey: "email", header: "Email" },
           { accessorKey: "status_label", header: "Status" },
@@ -112,19 +130,17 @@ const TeacherPage = () => {
             id: "actions",
             header: "Actions",
             cell: ({ row }) => {
-             
               return (
-             
-                <div className="flex gap-2">
-                  {/* <Button
-                    variant="outline"
-                    className="border-red-600 hover:bg-red-100 text-red-400"
-                    onClick={() => handleDelete(teachers)}
-                  >
-                    Delete
-                  </Button> */}
-                 
-                </div>
+                // <div className="flex gap-2">
+                //    <Button
+                //     variant="outline"
+                //     className="border-red-600 hover:bg-red-100 text-red-400"
+                //     onClick={() => handleDelete(teacher_name)}
+                //   >
+                //     Delete
+                //   </Button> 
+                // </div>
+                <></>
               );
             },
           },
@@ -139,7 +155,7 @@ const TeacherPage = () => {
           </DialogHeader>
 
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <FormField
                 control={form.control}
                 name="teacher_name"
@@ -169,15 +185,15 @@ const TeacherPage = () => {
                   </FormItem>
                 )}
               />
-              <FormField
+                 <FormField
                 control={form.control}
-                name="status_label"
+                name="password"
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
                       <Input
                         type="text"
-                        placeholder="status_label"
+                        placeholder="Enter Your Password"
                         {...field}
                       />
                     </FormControl>
@@ -185,23 +201,30 @@ const TeacherPage = () => {
                   </FormItem>
                 )}
               />
-              {/* <FormField
+               <FormField
                 control={form.control}
-                name="school_id"
+                name="status_label"
                 render={({ field }) => (
                   <FormItem>
-                    <FormControl>
-                      <Input
-                        type="text"
-                        placeholder="Enter School Id"
-                        {...field}
-                      />
-                    </FormControl>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="">
+                          <SelectValue placeholder="Status" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="bg-gray-200">
+                        <SelectItem value="Active">Active</SelectItem>
+                        <SelectItem value="UnActive">UnActive</SelectItem>
+                    
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
-                )}  
-              /> */}
-
+                )}
+              />
               <DialogFooter className="pt-4">
                 <Button type="submit">Submit</Button>
                 <Button type="button" onClick={() => setTeacherDetail(false)}>

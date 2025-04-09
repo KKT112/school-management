@@ -1,4 +1,4 @@
-import apiTeacherList from "@/network/api/api-techer/api-techer";
+import apiTeacherList from "@/network/api/api-techer/api-techer-list";
 import { ITeacherModel } from "../../model/school-register/teacher-model";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 

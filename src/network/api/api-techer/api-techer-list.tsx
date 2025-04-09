@@ -1,7 +1,7 @@
 
 import { ITeacherModel } from "@/model/school-register/teacher-model";
 import { apiEndPoints } from "@/network/api-end-points"
-import { API_GET } from "@/network/api-service"
+import {  API_GET } from "@/network/api-service"
 
 export default class apiTeacherList{
 
@@ -13,10 +13,10 @@ export default class apiTeacherList{
         url:apiEndPoints.getTeacherlist,
         params:{school_id},
     })
-    
+
     return res;
 
     }
-
 }
+
 

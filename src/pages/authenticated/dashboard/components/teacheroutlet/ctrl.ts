@@ -7,23 +7,15 @@ import { getTeacherList } from "../../../../../redux/reducer/techer-reducer";
   export const useTeacherCtrl = () => {
     const dispatch = useDispatch();
     const {id:school_id}= useSelector((state: ReduxState) => state.school);
+    // const{} = useSelector((state:ReduxState)=>state.teacher.teacher)
 
-  //  const teacherCreate = async(data:ITeacherAdd)=>{
-  //     const res  = await ApiTeacherCreate.ApiCreateTeacher(data);
-  //     if(res){
-  //       console.log(res);
-  //     }
-  //   }
-   
-    
+
+  
 
     const fetchTeachers = () => {
-     
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-
-      console.log(school_id);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      dispatch<any>(getTeacherList(school_id));
+       console.log(school_id);
+       // eslint-disable-next-line @typescript-eslint/no-explicit-any
+       dispatch<any>(getTeacherList(school_id));
     };
     
     useEffect(() => {
@@ -40,5 +32,6 @@ import { getTeacherList } from "../../../../../redux/reducer/techer-reducer";
       teacher: teacher,
       fetchTeachers,
       school_id,
+      name,
     };
   }

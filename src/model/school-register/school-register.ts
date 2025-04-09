@@ -1,5 +1,5 @@
 export interface ISchoolModel {
-    id:           number;
+    id:           number |null;
     name:         string;
     address:      string;
     status:       number;

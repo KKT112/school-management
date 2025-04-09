@@ -21,8 +21,7 @@ import { FaFacebookF, FaTwitter, FaGoogle } from "react-icons/fa";
 import { ImSpinner2 } from "react-icons/im";
 import { useState } from "react";
 import apiLogin from "@/network/api/api-login/api-login";
-import { useDispatch } from "react-redux";
-import { setSchoolName } from "@/redux/reducer/school-reducer";
+
 
 //**Zod Schema for Form Validation**
 const LoginFormSchema = z.object({
@@ -40,6 +39,7 @@ const LoginFormSchema = z.object({
 type TLoginSchema = z.infer<typeof LoginFormSchema>;
 
 const Login = () => {
+  // const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isloading, setIsloading] = useState(false);
 
@@ -65,7 +65,7 @@ const Login = () => {
         if (res && res.s) { 
             localStorage.setItem("auth", JSON.stringify(res.r)); 
             localStorage.setItem("schoolName", JSON.stringify(res.r?.name || ""));
-            dispatch(setSchoolName(res.r?.name || ""));
+            //  dispatch(setSchoolName(res.r?.name || undefined));
             navigate("/dashboard", { replace: true }); 
             
         } else if(res.m === "User not exists"){
@@ -88,7 +88,7 @@ const Login = () => {
    
  
   };
-  const dispatch = useDispatch();
+ 
 
   return (
     <div className="bg-orange-50 ">
