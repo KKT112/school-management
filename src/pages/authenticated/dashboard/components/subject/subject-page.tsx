@@ -1,7 +1,28 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { useEffect, useState } from "react";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
 import { DataTable } from "@/components/table/data-table";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormControl,
+  FormMessage,
+  FormLabel,
+} from "@/components/ui/form";
+
 import {
   Select,
   SelectContent,
@@ -9,115 +30,114 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
- 
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-
-interface ISubjectModel {
-  name: string;
-  teacherName: string;
-  email: string;
-}
-
-const subjects: ISubjectModel[] = [
-  {
-    name: "Physics",
-    teacherName: "john",
-    email: "john@gmail.com",
-  },
-  {
-    name: "English",
-    teacherName: "thomas",
-    email: "thomas@gmail.com",
-  },
-  {
-    name: "Maths",
-    teacherName: "Abc",
-    email: "Abc@gmail.com",
-  },
-];
-
-
-
+import apiSubjectList from "@/network/api/api-subject/api-subject-list";
+import { useSelector } from "react-redux";
+import { ReduxState } from "@/redux/store";
+import { ISubjectModel } from "@/model/school-register/subject-model";
+import apiTeacherList from "@/network/api/api-techer/api-get-teacher-list";
+import apiCreateSubject from "@/network/api/api-subject/api-create-subject";
+import { ICreateSubject } from "@/model/school-register/subject-create-model";
+import { ITeacherModel } from "@/model/school-register/teacher-model";
 
 const OutletSubject = () => {
-  const [isLoading, setIsLoading] = useState(false);
+  const school = useSelector((state: ReduxState) => state.school);
+
+
+  // For teacher api use in dropdown
+  const [teacherList, setTeacherList] = useState<ITeacherModel[]>([]);
+
+  // teacher api call
+  useEffect(() => {
+    const fetchTeacher = async () => {
+      try {
+        if (!school?.id) return;
+        setIsLoading(true);
+        const res = await apiTeacherList.getTeacherList({
+          school_id: school.id,
+        });
+
+        setTeacherList(res.r ?? []);
+      } catch (error) {
+        console.error("Fail to get data", error);
+      }
+    };
+    fetchTeacher();
+  }, [school?.id]);
+
+  //zod validation for add subject
+  const subjectFormSchema = z.object({
+    name: z.string().min(1, "Subject name is required"),
+    teacher_id: z.string(),
+  });
+  type SubjectFormType = z.infer<typeof subjectFormSchema>;
+
+  const [subjectArr, setSubjectArr] = useState<ISubjectModel[]>();
   const [openAddSubject, setOpenAddSubject] = useState(false);
   const [search, setSearch] = useState("");
-  const [subjectArr,setSubjectArr] = useState<ISubjectModel[]>(subjects);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const [newTeacherName, setNewTeacherName] = useState("");
-const [newEmail, setNewEmail] = useState("");
-const [newname, setNewname] = useState("");
+  //For showing data in table after addsubject api calling
+  const [isApiCalling, setIsApiCalling] = useState(false);
 
+  const form = useForm<SubjectFormType>({
+    resolver: zodResolver(subjectFormSchema),
+    defaultValues: {
+      name: "",
+    },
+  });
 
-const handleAddSubject = () => {
-  if (!newTeacherName || !newEmail || !newname) return;
-
-  const newSubjectAdd: ISubjectModel = {
-    name: newname,
-    email: newEmail,
-    teacherName:newTeacherName ,
+  const onSubmit = async (data: SubjectFormType) => {
+    const t = { ...data, school_id: school?.id };
+    addSubject(t);
+    form.reset();
+    setOpenAddSubject(false);
   };
 
-  setSubjectArr([...subjectArr, newSubjectAdd]);
-  setOpenAddSubject(false);
 
-  // Clear input fields
-  setNewname("");
-  setNewEmail("");
-  setNewTeacherName("");
-};
- // Delete user
- const handleDelete = (userToDelete: ISubjectModel) => {
-  const updatedSubjects = subjects.filter(subject =>subject.email !== userToDelete.email);
-  setSubjectArr(updatedSubjects);
-};
+  // subject list api
+  useEffect(() => {
+    const fetchSubjects = async () => {
+      try {
+        if (!school?.id) return;
+        setIsLoading(true);
+        const res = await apiSubjectList.getSubjectList({
+          school_id: school.id,
+        });
+        setSubjectArr(res.r || []);
+      } catch (error) {
+        console.error("Failed to fetch subject list:", error);
+      }
+      setIsLoading(false);
+    };
 
+    fetchSubjects();
+  }, [school?.id, isApiCalling]);
+
+  //add subject api
+  const addSubject = async (data: ICreateSubject) => {
+    try {
+      const res = await apiCreateSubject.createSubject(data);
+      setIsApiCalling(!isApiCalling);
+      return console.log(res.r);
+    } catch (error) {
+      console.log("Fail to store data", error);
+    }
+  };
+  
   return (
-    <div className="pt-20 ">
-      <div className="flex mx-15 items-center gap-10">
-        <p>Select Standard*</p>
-        <Select>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Std-1" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="std-1">Std-1</SelectItem>
-            <SelectItem value="std-2">Std-2</SelectItem>
-            <SelectItem value="std-3">Std-3</SelectItem>
-            <SelectItem value="std-4">Std-4</SelectItem>
-            <SelectItem value="std-5">Std-5</SelectItem>
-            <SelectItem value="std-6">Std-6</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-  <div className="pt-20"></div>
-      <DataTable<ISubjectModel> 
-        // onFilterClick={() => {
-        //   setFilterSheetOpen(true);
-        // }}
+    <div className="pt-20">
+      <div className="pt-20" />
+
+      <DataTable<ISubjectModel>
         actionButton={
-          <Button onClick={() => setOpenAddSubject(true)}>Add Subject</Button>
+          <div className="flex items-center gap-5">
+            {" "}
+            <Button onClick={() => setOpenAddSubject(true)}>Add Subject</Button>
+          </div>
         }
         enableFilter={true}
         searchValue={[search]}
-        // callToNextPage={(currentPage, size) => {
-        //   if ((currentPage + 1) * size >= (totalData?.length ?? 0)) {
-        //     // setSkip(totalData?.length ?? 0);
-        //     fetchNextPage();
-        //   }
-        // }}
-        onSearchChange={(e: any) => {
-          setSearch(e.target.value);
-        }}
+        onSearchChange={(e: any) => setSearch(e.target.value)}
         isFetching={isLoading}
         isLoading={isLoading}
         data={subjectArr ?? []}
@@ -137,35 +157,12 @@ const handleAddSubject = () => {
             header: "Subject Name",
           },
           {
-            accessorKey: "teacherName",
+            accessorKey: "teacher",
             header: "Faculty Name",
-          },
-          {
-            accessorKey: "email",
-            header: "Email",
-            cell: ({ row }) => {
+            cell({ row }) {
               return (
-                <div>
-                  <p className="text-start">{row.original.email}</p>
-                </div>
-              );
-            },
-          },
-          {
-            id: "actions",
-            header: "Actions",
-            cell: ({ row }) => {
-              const user = row.original;
-
-              return (
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    className="border-red-600 hover:bg-red-100 text-red-400"
-                    onClick={() => handleDelete(user)}
-                  >
-                    Delete
-                  </Button>
+                <div className="items-start flex">
+                  {row.original.teacher?.name}
                 </div>
               );
             },
@@ -173,26 +170,63 @@ const handleAddSubject = () => {
         ]}
       />
 
-<Dialog open={openAddSubject}>
-        <DialogContent
-        onInteractOutside={()=>setOpenAddSubject(false)}
-        >
+      {/* Dialog with form */}
+      <Dialog open={openAddSubject} onOpenChange={setOpenAddSubject}>
+        <DialogContent onInteractOutside={() => setOpenAddSubject(false)}>
           <DialogHeader>
             <DialogTitle>Add Subject</DialogTitle>
-
-            <div>
-             <p className="mt-7 pb-2">Subject Name </p> <Input placeholder="Enter Subject name" />
-             <p className=" pt-5 pb-2">Faculty Name</p> <Input type="text" placeholder="Enter Faculty Name"/>
-             <p className="pt-5 pb-2">Email</p> <Input type="email" placeholder="Enter email  "/>
-            </div>
-
-            <DialogFooter>
-              <Button>Submit</Button>
-              <Button
-              onClick={()=>setOpenAddSubject(false)}
-              type="button">Close</Button>
-            </DialogFooter>
           </DialogHeader>
+
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Input placeholder="Subject Name" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="teacher_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className=" ">Teacher Name :</FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger className="">
+                          <SelectValue placeholder="Select  Teacher" />
+                          <SelectContent>
+                            {/* teacher api call  and daynamic data*/}
+                            {teacherList.map((p, index) => {
+                              return (
+                                <SelectItem key={index} value={`${p.id}`}>
+                                  {p.name}
+                                </SelectItem>
+                              );
+                            })}
+                          </SelectContent>
+                        </SelectTrigger>
+                      </FormControl>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <DialogFooter className="pt-4">
+                <Button type="submit">Submit</Button>
+                <Button type="button" onClick={() => setOpenAddSubject(false)}>
+                  Close
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
         </DialogContent>
       </Dialog>
     </div>

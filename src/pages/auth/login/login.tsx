@@ -22,7 +22,7 @@ import { ImSpinner2 } from "react-icons/im";
 import { useState } from "react";
 import apiLogin from "@/network/api/api-login/api-login";
 import { useDispatch } from "react-redux";
-import { setSchoolName } from "@/redux/reducer/reducer";
+import { setSchoolName } from "@/redux/reducer/school-reducer";
 
 //**Zod Schema for Form Validation**
 const LoginFormSchema = z.object({
@@ -47,6 +47,7 @@ const Login = () => {
     resolver: zodResolver(LoginFormSchema),
     defaultValues: { email: "", password: "" ,checkbox:true},
   });
+  const dispatch = useDispatch();
 
   // Form Submission Handler
   const Login: SubmitHandler<TLoginSchema> = async(data) => {
@@ -60,12 +61,12 @@ const Login = () => {
     setIsloading(true);
     try {
         const res = await apiLogin.getLogin({ email, password });
-        // console.log("Response from login:", res);
+        console.log("Response from login:", res);
 
         if (res && res.s) { 
             localStorage.setItem("auth", JSON.stringify(res.r)); 
-            localStorage.setItem("schoolName", JSON.stringify(res.r?.name || ""));
-            dispatch(setSchoolName(res.r?.name || ""));
+            
+            dispatch(setSchoolName(res.r));
             navigate("/dashboard", { replace: true }); 
             
         } else if(res.m === "User not exists"){
@@ -88,7 +89,7 @@ const Login = () => {
    
  
   };
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
   return (
     <div className="bg-orange-50 ">

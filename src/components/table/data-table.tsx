@@ -192,7 +192,7 @@ export function DataTable<TData>({
                       data-state={row.getIsSelected() && "selected"}
                     >
                       {row.getVisibleCells().map((cell) => (
-                        <TableCell
+                        <TableCell 
                           key={cell.id}
                           style={{ ...getCommonPinningStyles(cell.column) }}
                           className=" text-start"

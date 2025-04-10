@@ -49,7 +49,8 @@ const StandardPageOutlet = () => {
     form.reset();
     setOpenAddSubject(false)
   }
-
+  
+  
   const [isLoading, setIsLoading] = useState(false);
   const [openAddSubject, setOpenAddSubject] = useState(false);
   const [search, setSearch] = useState("");
@@ -58,7 +59,7 @@ const StandardPageOutlet = () => {
   
 
   return (
-    <div>
+    <div className="pt-20">
       <DataTable<IStandardData>
         // onFilterClick={() => {
         //   setFilterSheetOpen(true);

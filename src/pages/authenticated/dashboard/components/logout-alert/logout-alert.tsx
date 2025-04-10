@@ -10,7 +10,7 @@ import {
     AlertDialogTrigger,
   } from "@/components/ui/alert-dialog"
   import { Button } from "@/components/ui/button"
-import { setSchoolName } from "@/redux/reducer/reducer";
+import { setSchoolName } from "@/redux/reducer/school-reducer";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom"
   

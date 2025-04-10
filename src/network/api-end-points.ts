@@ -1,6 +1,6 @@
 
 class ApiSchoolServer{
-    public baseUrl = "https://api-school-management.devkrest.com/api/auth"
+    public baseUrl = "https://api-school-management.devkrest.com/api"
 }
 
 class ApiEndPoints{
@@ -20,18 +20,26 @@ class ApiEndPoints{
 
 
     //api logindata
-    public getLogin = "/login";
+    public getLogin = "/auth/login";
 
     //api registration 
-    public getRegistration = "/register-school";
-
-    //api teacher
+    public getRegistration = "/auth/register-school";
     
+
+    //api teacherList
+    public getTeacherlist =`/teacher/get-list`;
   
-    //api subject
+
+    //api teacher create
+    public createTeacher = "/teacher/create"
 
 
-    //
+    //api subject list
+    public getSubjectList = `/subject/get-list`
+
+    //api subject create
+    public createSubject = "/subject/create"
+
 
 }
 

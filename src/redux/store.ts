@@ -1,12 +1,17 @@
 import { configureStore } from '@reduxjs/toolkit';
-import schoolReducer from '../redux/reducer/reducer';
+import schoolReducer from './reducer/school-reducer';
+import {reducer as teacherReducer } from "../redux/reducer/techer-reducer"
 
 const store = configureStore({
   reducer: {
     school: schoolReducer,
+    teacher:teacherReducer,
   },
 });
 
-export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
+export type ReduxState = ReturnType<typeof store.getState>;
 export default store;
+
+
+

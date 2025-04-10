@@ -14,14 +14,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { schoolRegistration } from "@/lib/registration";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import ApiRegister from "@/network/api/school-registration/api-register";
 import { useNavigate } from "react-router-dom";
 import { ImSpinner2 } from "react-icons/im";
 // import Header from "../../../components/header/header";
 import Navbar from "@/pages/authenticated/school-landong-page-home/navbar";
-import { useDispatch } from "react-redux";
-import { setSchoolName } from "../../../redux/reducer/reducer";
+// import { useDispatch } from "react-redux";
+// import { setSchoolName } from "../../../redux/reducer/school-reducer";
 
 const RegistrationFormSchema = z
   .object({
@@ -86,6 +86,7 @@ const Registration = () => {
       });
 
       if (res && res.s) {
+        console.log(res.r);
         return navigate("/login", { replace: true });
       } else {
         return alert("User already Exists");
@@ -112,16 +113,16 @@ const Registration = () => {
   };
 
 
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
 
-  useEffect(() => {
-    const subscription = form.watch((value) => {
-      if (value.name !== undefined) {
-        dispatch(setSchoolName(value.name));
-      }
-    });
-    return () => subscription.unsubscribe();
-  },[]);
+  // useEffect(() => {
+  //   const subscription = form.watch((value) => {
+  //     if (value.name !== undefined) {
+  //       dispatch(setSchoolName(value.name));
+  //     }
+  //   });
+  //   return () => subscription.unsubscribe();
+  // },[]);
 
 
   return (

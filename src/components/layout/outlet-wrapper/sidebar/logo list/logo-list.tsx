@@ -6,14 +6,14 @@ import { GiTeacher } from "react-icons/gi";
 import { MdSettingsApplications } from "react-icons/md";
 import { LogoutAlert } from "@/pages/authenticated/dashboard/components/logout-alert/logout-alert";
 import { useSelector } from "react-redux";
-import { RootState } from "../../../../../redux/store";
+import { ReduxState } from "../../../../../redux/store";
 import { FiBookOpen } from "react-icons/fi";
 
 
 
 const LogoListSidebar = () => {
   const navigate = useNavigate();
-  const schoolName = useSelector((state: RootState) => state.school.name);
+  const schoolName = useSelector((state: ReduxState) => state.school.name);
 
   return (
     <div className="flex flex-col  pt-10 pb-10  h-full justify-between ">
