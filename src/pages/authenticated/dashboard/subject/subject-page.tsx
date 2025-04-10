@@ -1,5 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from "react";
+import apiSubjectList from "../../../../network/api/api-subject/api-subject";
+import apiTeacherList from "../../../../network/api/api-techer/api-techer-list";
+import apiCreateSubject from "../../../../network/api/api-subject/api-subject-create";
+
+import { ISubjectModel } from "../../../../model/subject-model";
+import { ICreateSubject } from "../../../../model/subject-create-model";
+import { ITeacherModel } from "../../../../model/teacher-model";
+
+import { useEffect, useState } from "react";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -30,60 +38,95 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useSelector } from "react-redux";
+import { ReduxState } from "@/redux/store";
 
-// Zod schema
-const subjectFormSchema = z.object({
-  name: z.string().min(1, "Subject name is required"),
-  teacherName: z.enum(["john", "thomas", "venom", "abc"], {
-    message: "Please select a teacher name",
-  }),
-});
-
-type SubjectFormType = z.infer<typeof subjectFormSchema>;
-
-interface ISubjectModel {
-  name: string;
-  teacherName: string;
-}
-
-const subjects: ISubjectModel[] = [
-  { name: "Physics", teacherName: "john" },
-  { name: "English", teacherName: "thomas" },
-  { name: "Maths", teacherName: "Venom" },
-];
 
 const OutletSubject = () => {
-  const [subjectArr, setSubjectArr] = useState<ISubjectModel[]>(subjects);
+  const school = useSelector((state: ReduxState) => state.school);
+
+
+  // For teacher api use in dropdown
+  const [teacherList, setTeacherList] = useState<ITeacherModel[]>([]);
+
+  // teacher api call
+  useEffect(() => {
+    const fetchTeacher = async () => {
+      try {
+        if (!school?.id) return;
+        setIsLoading(true);
+        const res = await apiTeacherList.getTeacherList({
+          school_id: school.id,
+        });
+
+        setTeacherList(res.r ?? []);
+      } catch (error) {
+        console.error("Fail to get data", error);
+      }
+    };
+    fetchTeacher();
+  }, [school?.id]);
+
+  //zod validation for add subject
+  const subjectFormSchema = z.object({
+    name: z.string().min(1, "Subject name is required"),
+    teacher_id: z.string(),
+  });
+  type SubjectFormType = z.infer<typeof subjectFormSchema>;
+
+  const [subjectArr, setSubjectArr] = useState<ISubjectModel[]>();
   const [openAddSubject, setOpenAddSubject] = useState(false);
   const [search, setSearch] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  //For showing data in table after addsubject api calling
+  const [isApiCalling, setIsApiCalling] = useState(false);
 
   const form = useForm<SubjectFormType>({
     resolver: zodResolver(subjectFormSchema),
     defaultValues: {
       name: "",
-      teacherName: undefined,
     },
   });
 
-  const onSubmit = (data: SubjectFormType) => {
-    const newSubject: ISubjectModel = {
-      name: data.name,
-      teacherName: data.teacherName,
-    };
-
-    setSubjectArr([...subjectArr, newSubject]);
+  const onSubmit = async (data: SubjectFormType) => {
+    const t = { ...data, school_id: school?.id };
+    addSubject(t);
     form.reset();
     setOpenAddSubject(false);
   };
 
-  const handleDelete = (subjectToDelete: ISubjectModel) => {
-    const updatedSubjects = subjectArr.filter(
-      (subject) => subject !== subjectToDelete
-    );
-    setSubjectArr(updatedSubjects);
-  };
 
+  // subject list api
+  useEffect(() => {
+    const fetchSubjects = async () => {
+      try {
+        if (!school?.id) return;
+        setIsLoading(true);
+        const res = await apiSubjectList.getSubjectList({
+          school_id: school.id,
+        });
+        setSubjectArr(res.r || []);
+      } catch (error) {
+        console.error("Failed to fetch subject list:", error);
+      }
+      setIsLoading(false);
+    };
+
+    fetchSubjects();
+  }, [school?.id, isApiCalling]);
+
+  //add subject api
+  const addSubject = async (data: ICreateSubject) => {
+    try {
+      const res = await apiCreateSubject.createSubject(data);
+      setIsApiCalling(!isApiCalling);
+      return console.log(res.r);
+    } catch (error) {
+      console.log("Fail to store data", error);
+    }
+  };
+  
   return (
     <div className="pt-20">
       <div className="pt-20" />
@@ -93,18 +136,6 @@ const OutletSubject = () => {
           <div className="flex items-center gap-5">
             {" "}
             <Button onClick={() => setOpenAddSubject(true)}>Add Subject</Button>
-            <Select>
-              <SelectTrigger className="py-6 px-7 text-lg">
-                <SelectValue placeholder="Select a teacher" />
-              </SelectTrigger>
-
-              <SelectContent className="bg-gray-200">
-                <SelectItem value="john">John</SelectItem>
-                <SelectItem value="thomas">Thomas</SelectItem>
-                <SelectItem value="venom">Venom</SelectItem>
-                <SelectItem value="abc">abc</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
         }
         enableFilter={true}
@@ -129,23 +160,12 @@ const OutletSubject = () => {
             header: "Subject Name",
           },
           {
-            accessorKey: "teacherName",
+            accessorKey: "teacher",
             header: "Faculty Name",
-          },
-          {
-            id: "actions",
-            header: "Actions",
-            cell: ({ row }) => {
-              const subject = row.original;
+            cell({ row }) {
               return (
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    className="border-red-600 hover:bg-red-100 text-red-400"
-                    onClick={() => handleDelete(subject)}
-                  >
-                    Delete
-                  </Button>
+                <div className="items-start flex">
+                  {row.original.teacher?.name}
                 </div>
               );
             },
@@ -168,34 +188,36 @@ const OutletSubject = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Input placeholder="Enter Subject name" {...field} />
+                      <Input placeholder="Subject Name" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              <FormField
+             
+<FormField
                 control={form.control}
-                name="teacherName"
+                name="teacher_id"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className=" ">Teacher Name :</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+                    <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
-                        <SelectTrigger className="py-6 px-7 text-lg">
-                          <SelectValue placeholder="Select a teacher" />
+                        <SelectTrigger className="">
+                          <SelectValue placeholder="Select  Teacher" />
+                          <SelectContent>
+                           
+                            {teacherList.map((p, index) => {
+                              return (
+                                <SelectItem key={index} value={`${p.id}`}>
+                                  {p.name}
+                                </SelectItem>
+                              );
+                            })}
+                          </SelectContent>
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent className="bg-gray-200">
-                        <SelectItem value="john">John</SelectItem>
-                        <SelectItem value="thomas">Thomas</SelectItem>
-                        <SelectItem value="venom">Venom</SelectItem>
-                        <SelectItem value="abc">abc</SelectItem>
-                      </SelectContent>
                     </Select>
                     <FormMessage />
                   </FormItem>

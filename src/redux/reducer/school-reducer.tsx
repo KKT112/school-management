@@ -1,8 +1,8 @@
 import { ISchoolModel } from "@/model/school-register";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-const initialState: ISchoolModel |null = (localStorage.getItem("auth") ? JSON.parse(localStorage.getItem("auth")!) :
-  {}) as ISchoolModel | null ;
+const initialState: ISchoolModel|null = (localStorage.getItem("auth") ? JSON.parse(localStorage.getItem("auth")!) :
+  {}) as ISchoolModel|null  ;
 const schoolSlice = createSlice({
   name: "school",
   initialState: initialState,

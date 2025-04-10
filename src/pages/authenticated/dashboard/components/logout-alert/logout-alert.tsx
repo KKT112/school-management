@@ -17,7 +17,7 @@ import { useNavigate } from "react-router-dom"
   export function LogoutAlert() {
 
     const navigate = useNavigate();
-    const dispatch = useDispatch();
+     const dispatch = useDispatch();
 
     const handleLogout =()=>{
         localStorage.removeItem("auth");
@@ -25,7 +25,7 @@ import { useNavigate } from "react-router-dom"
         navigate("/");
 
         localStorage.removeItem("schoolName");
-        dispatch(setSchoolName(""));
+        dispatch(setSchoolName(null));
     }
     return (
       <AlertDialog >

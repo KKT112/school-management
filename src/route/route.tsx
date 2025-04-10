@@ -5,9 +5,9 @@ import Register from "@/pages/auth/registration/registration";
 import OutLetWraper from "@/components/layout/outlet-wrapper/wrapper";
 import DashboardPage from "@/pages/authenticated/dashboard/page";
 import OutletTeacher from "@/pages/authenticated/dashboard/components/teacheroutlet/teacher-page";
-import OutletSubject from "@/pages/authenticated/dashboard/components/subject/subject-page";
 import OutletStudent from "@/pages/authenticated/dashboard/components/student/student-page";
 import StandardPageOutlet from "@/pages/authenticated/dashboard/components/standard/standard-page";
+import OutletSubject from "@/pages/authenticated/dashboard/subject/subject-page";
 
 export const route = createBrowserRouter([
   {
@@ -41,10 +41,7 @@ export const route = createBrowserRouter([
         path: "teacher",
         element: <OutletTeacher />,
       },
-      {
-        path: "subject",
-        element: <OutletSubject />,
-      },
+     
       {
         path: "student",
         element: <OutletStudent />,
@@ -52,6 +49,10 @@ export const route = createBrowserRouter([
       {
         path: "standard",
         element: <StandardPageOutlet/>,
+      },
+      {
+        path: "subject",
+        element: <OutletSubject />,
       },
     ],
   },

@@ -4,6 +4,7 @@ class ApiSchoolServer{
 }
 
 class ApiEndPoints{
+    [x: string]: string;
 
     public baseUrl:string;
 
@@ -33,7 +34,11 @@ class ApiEndPoints{
     public createTeacherList = "/teacher/create"
 
 
-    //
+    //  //api subject list
+    public getSubjectList = `/subject/get-list`
+
+    //api subject create
+    public createSubject = "/subject/create"
 
 }
 
