@@ -32,6 +32,5 @@ import { getTeacherList } from "../../../../../redux/reducer/techer-reducer";
       teacher: teacher,
       fetchTeachers,
       school_id,
-      name,
     };
   }

@@ -1,4 +1,4 @@
-import { ISchoolModel} from "@/model/school-register/school-register";
+import { ISchoolModel} from "@/model/school-register";
 import {apiEndPoints} from "@/network/api-end-points"
 import { API_POST } from "@/network/api-service"
 

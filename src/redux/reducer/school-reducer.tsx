@@ -1,4 +1,4 @@
-import { ISchoolModel } from "@/model/school-register/school-register";
+import { ISchoolModel } from "@/model/school-register";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 const initialState: ISchoolModel |null = (localStorage.getItem("auth") ? JSON.parse(localStorage.getItem("auth")!) :

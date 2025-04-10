@@ -7,7 +7,7 @@ import DashboardPage from "@/pages/authenticated/dashboard/page";
 import OutletTeacher from "@/pages/authenticated/dashboard/components/teacheroutlet/teacher-page";
 import OutletSubject from "@/pages/authenticated/dashboard/components/subject/subject-page";
 import OutletStudent from "@/pages/authenticated/dashboard/components/student/student-page";
-import StandardPageOutlet from "@/pages/authenticated/dashboard/components/standard/page";
+import StandardPageOutlet from "@/pages/authenticated/dashboard/components/standard/standard-page";
 
 export const route = createBrowserRouter([
   {

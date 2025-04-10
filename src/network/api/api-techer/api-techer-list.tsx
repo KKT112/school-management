@@ -1,5 +1,5 @@
 
-import { ITeacherModel } from "@/model/school-register/teacher-model";
+import { ITeacherModel } from "@/model/teacher-model";
 import { apiEndPoints } from "@/network/api-end-points"
 import {  API_GET } from "@/network/api-service"
 

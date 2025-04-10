@@ -1,11 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from "react";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-
 import { DataTable } from "@/components/table/data-table";
 import { Button } from "@/components/ui/button";
+import { useState } from "react";
+
 import {
   Dialog,
   DialogContent,
@@ -14,98 +10,107 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+
 import {
   Form,
   FormControl,
   FormField,
-  FormItem, 
+  FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import { ITeacherModel } from "@/model/teacher-model";
-import TeacherContextProvider, { useContextProvider } from "./cntx";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import ApiTeacherCreate, { ITeacherAdd } from "@/network/api/api-techer/api-create-teacher";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+// import { ITeacherModel } from "@/model/school-register/teacher-model";
+import TeacherContextProvider, { useContextProvider } from "../teacheroutlet/cntx";
+import { IStandardModel } from "@/model/standard-model";
+// import ApiTeacherCreate, { ITeacherAdd } from "@/network/api/api-techer/api-create-teacher";
 
-//  Create Zod schema
-const teacherFormSchema = z.object({
-  
-  teacher_name: z.string().min(1, { message: "Name is required" }),
-  email: z.string().email({ message: "email is required" }),
-  password:z.string().min(3,{message:"Enter Your Password"}),
-  status_label: z.enum(["Active","UnActive"], {
-    message: "Please select a Status name",
-  }),
-});
-
-type StudentFormValues = z.infer<typeof teacherFormSchema>;
-
-function OutletTeacher() {
+function StandardPageOutlet() {
   return (
     <TeacherContextProvider>
-      <TeacherPage />
+      <StandardPage/>
     </TeacherContextProvider>
   );
 }
 
 
-const TeacherPage = () => {
+const StandardPage = () => {
+  const { isLoading, teacher,fetchTeachers } = useContextProvider();
+  const teceherIds  = teacher.map((v)=>String(v.id));
+
+  const formSchemaAddStandard = z.object({
+    standard: z
+      .string({ required_error: "This is Required", message: "" })
+      .min(1, { message: "Standard must be at least 1 character long" })
+      .max(4, { message: "Standard must be at most 4 characters long" }),
+    division: z
+      .string({ required_error: "This is Required" })
+      .min(1, { message: "division must be at least 1 characters long" })
+      .max(4, { message: "division be at most 4 characters long" }),
+    techerList: z
+    .string().refine((v)=>teceherIds.includes(v))
+  });
+
+  type StudentFormValues = z.infer<typeof formSchemaAddStandard>;
+
+  
   const [tecaherDetail, setTeacherDetail] = useState(false);
   const [search, setSearch] = useState("");
-  const { isLoading, teacher,school_id,fetchTeachers,  } = useContextProvider();
+  
+
+  
 
   
   
-const techerAdd = async (data: ITeacherAdd) => {
-  const res = await ApiTeacherCreate.ApiCreateTeacher(data);
-  console.log("api response",res.m);
+// const techerAdd = async (data: ITeacherAdd) => {
+//   const res = await ApiTeacherCreate.ApiCreateTeacher(data);
+//   console.log("api response",res.m);
 
-  if(res.m === "Success"){
-    await fetchTeachers(); 
-    console.log(fetchTeachers());
-    setTeacherDetail(false); 
-    form.reset(); 
-  }
-};
+  // if(res.m === "Success"){
+    
+  //   console.log(fetchTeachers());
+   
+  // }
+
 
   //
   const form = useForm<StudentFormValues>({
-    resolver: zodResolver(teacherFormSchema),
+    resolver: zodResolver(formSchemaAddStandard),
     defaultValues: {
-      teacher_name: "",
-      email: "",
+      standard: "",
+      division: "",
     },
   });
 
   // Submit Handler
   const onSubmit = (data: StudentFormValues) => {
-    console.log("Form submitted with data: ", data);
-    techerAdd({...data,school_id });
+     console.log("Form submitted with data: ", data);
+    setTeacherDetail(true);
+    fetchTeachers(); 
+    setTeacherDetail(false); 
+    form.reset(); 
+    // techerAdd({...data,school_id });
   };
 
-  // function handleDelete(teacher_name){
 
-  // }
 
   return (
     <div className="pt-20">
-      <DataTable<ITeacherModel>
+      <DataTable<IStandardModel>
         actionButton={
           <div>
             {
               <Button onClick={() => setTeacherDetail(true)}>
-                Add Teacher Detail
+                Add Standard Data
               </Button>
             }
           </div>
         }
         enableFilter={false}
         searchValue={[search]}
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         onSearchChange={(e: any) => setSearch(e.target.value)}
         isFetching={isLoading}
         isLoading={isLoading}
@@ -122,18 +127,13 @@ const techerAdd = async (data: ITeacherAdd) => {
             },
           },
 
-          { accessorKey: "name", header: "Name" },
-          { accessorKey: "email", header: "Email" },
-          { accessorKey: "status_label", header: "Status" },
+          { accessorKey: "standard", header: "Standard" },
+          { accessorKey: "division", header: "Division" },
+           { accessorKey: "TeacherList", header: "TeacherList" },
           {
-            id: "actions",
-            header: "Actions",
-            cell: ({ row }) => {
-              return (
-    
-                <></>
-                
-              );
+            id: "action",
+            header: "Action",
+            cell: ({ row }) => {<>{row}</>
             },
           },
         ]}
@@ -143,18 +143,18 @@ const techerAdd = async (data: ITeacherAdd) => {
       <Dialog open={tecaherDetail} onOpenChange={setTeacherDetail}>
         <DialogContent onInteractOutside={() => setTeacherDetail(false)}>
           <DialogHeader>
-            <DialogTitle>Add Teacher Detail</DialogTitle>
+            <DialogTitle>Add Standard Data</DialogTitle>
           </DialogHeader>
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <FormField
                 control={form.control}
-                name="teacher_name"
+                name="standard"
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
-                      <Input placeholder="Enter Teacher name" {...field} />
+                      <Input placeholder="Enter Your Standard" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -163,29 +163,13 @@ const techerAdd = async (data: ITeacherAdd) => {
 
               <FormField
                 control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        type="email"
-                        placeholder="Enter Teacher email"
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-                 <FormField
-                control={form.control}
-                name="password"
+                name="division"
                 render={({ field }) => (
                   <FormItem>
                     <FormControl>
                       <Input
                         type="text"
-                        placeholder="Enter Your Password"
+                        placeholder="Enter Your Division"
                         {...field}
                       />
                     </FormControl>
@@ -193,9 +177,10 @@ const techerAdd = async (data: ITeacherAdd) => {
                   </FormItem>
                 )}
               />
+              
                <FormField
                 control={form.control}
-                name="status_label"
+                name="techerList"
                 render={({ field }) => (
                   <FormItem>
                     <Select
@@ -204,13 +189,14 @@ const techerAdd = async (data: ITeacherAdd) => {
                     >
                       <FormControl>
                         <SelectTrigger className="">
-                          <SelectValue placeholder="Status" />
+                          <SelectValue placeholder="TeacherList" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent className="bg-gray-200">
-                        <SelectItem value="Active">Active</SelectItem>
-                        <SelectItem value="UnActive">UnActive</SelectItem>
-                    
+                     {
+                      teacher.map((v,i)=>
+                      <SelectItem value={`${v.id}`} key={i}>{[...v.name]}</SelectItem>)
+                     }
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -231,4 +217,8 @@ const techerAdd = async (data: ITeacherAdd) => {
   );
 };
 
-export default OutletTeacher;
+
+
+
+
+export default StandardPageOutlet;
